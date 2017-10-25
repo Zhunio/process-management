@@ -3,6 +3,7 @@
 *.iml
 out
 gen
+.test
 
 # Compiled class file
 *.class

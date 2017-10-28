@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Richard I. Zhunio
  */
-class CPUScheduler {
+public class CPUScheduler {
 	/* List of processes ready to be executed by the CPU */
 	private ReadyQueue<PCB> readyQueue;
 
@@ -32,7 +32,7 @@ class CPUScheduler {
 	 * @param scheduleAlgorithm the {@code ScheduleAlgorithm} that will decide
 	 *                          which processes visit the CPU first.
 	 */
-	CPUScheduler(ReadyQueue<PCB> readyQueue,
+	public CPUScheduler(ReadyQueue<PCB> readyQueue,
 				 ScheduleAlgorithm scheduleAlgorithm) {
 		// Get a hold of the ready queue
 		this.readyQueue = readyQueue;
@@ -47,7 +47,7 @@ class CPUScheduler {
 	 * @return a {@code List} containing the order of execution of
 	 * processes.
 	 */
-	List<String> dispatch() {
+	public List<String> dispatch() {
 
 		// Run the following schedule algorithm and return its result
 		// which consists of a list containing the order in which processes

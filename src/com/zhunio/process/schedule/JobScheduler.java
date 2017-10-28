@@ -11,7 +11,7 @@ import com.zhunio.process.queue.ReadyQueue;
  *
  * @author Richard I. Zhunio
  */
-class JobScheduler {
+public class JobScheduler {
 
 	/* Represents the job pool residing on disk and containing all newly created
 	 * processes. Rather than being a File object, it is the path with which a File
@@ -25,7 +25,7 @@ class JobScheduler {
 	 *
 	 * @param filepath path to disk file containing the job pool.
 	 */
-	JobScheduler(String filepath) {
+	public JobScheduler(String filepath) {
 		jobPool = filepath;
 	}
 
@@ -35,7 +35,7 @@ class JobScheduler {
 	 *
 	 * @return A ready queue.
 	 */
-	ReadyQueue<PCB> loadJobPool() throws Exception {
+	public ReadyQueue<PCB> loadJobPool() throws Exception {
 
 		// Creates a new parser to read the contents of the job pool
 		JobPoolParser parser = new JobPoolParser(jobPool);

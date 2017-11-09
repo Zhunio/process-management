@@ -64,6 +64,10 @@ class JobPoolParser {
 		boolean preemption = (options[0] == 1);
 		int quantumTime = options[1];
 
+		// Throw error if quantum time is 0
+		if (quantumTime == 0)
+			throw new Exception("Invalid quantum time: " + quantumTime);
+
 		// Create new ready queue with the specific schedule algorithm
 		readyQueue = new ReadyQueue<>(preemption, quantumTime);
 

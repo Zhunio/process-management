@@ -61,8 +61,12 @@ public class Scheduler {
 		// Generate the schedule algorithm
 		ScheduleAlgorithm scheduleAlgorithm = ScheduleAlgorithm.generate(schedAlgorithm);
 
-		// Execute the scheduler
-		scheduler.execute(jobPool, scheduleAlgorithm);
+		try {
+			// Execute the scheduler
+			scheduler.execute(jobPool, scheduleAlgorithm);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	/**

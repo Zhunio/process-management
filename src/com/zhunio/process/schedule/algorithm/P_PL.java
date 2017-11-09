@@ -44,102 +44,57 @@ public class P_PL implements ScheduleAlgorithm {
 		// Initialize the timeline of the gant chart
 		int timeline = 0;
 
+		// Retrieve quantum time
+		int quantum = readyQueue.getQuantumTime();
+
 		// While the ready queue is not empty
-		while (!readyQueue.isEmpty()) {
+		while (!readyQueue.isEmpty() || !remainingQueue.isEmpty()) {
 
 			// Select process with the lowest priority under the given timeline
 			PCB newProcess = selectLowest(readyQueue, remainingQueue, timeline);
 
-			// Set the start and end time of this process
-			int start = timeline;
-			int end = -1;
+			// If new process has arrived
+			if (newProcess != null) {
 
-			// If the gant chart is empty
-			if (gantChart.isEmpty())
+				// Calculate the remaining burst time for this new process
+				int burstTimeRemaining = newProcess.getBurstTime() - newProcess.getCpuTime();
+
+				// Set the start timeline of this process
+				int start = timeline;
+				int end;
+
+				// If the burst time is less than or equal to quantum time
+				if (burstTimeRemaining <= quantum) {
+					// Calculate end time for this process
+					end = timeline + burstTimeRemaining;
+
+					// Add cpu time utilization to this process
+					newProcess.addCpuTime(quantum);
+				}
+
+				// If the burst time is greater than the quantum time
+				else {
+					// Calculate end time for this process
+					end = timeline + quantum;
+
+					// Add cpu time utilization to this process
+					newProcess.addCpuTime(quantum);
+
+					// Add this process to the remaining queue
+					remainingQueue.add(newProcess);
+				}
+
+				// Add this process to the gant entry
 				gantChart.add(new GantEntry(newProcess, start, end));
+				timeline = end;
 
-				// If the gant chart is not empty
+			}
+			// If no process has arrived, increment by quantum
 			else {
 
-				// Get last gant entry
-				GantEntry gantEntry = gantChart.getLast();
-
-				// Get a hold of the process in the last gant entry
-				PCB gantProcess = gantEntry.process;
-
-				// If the new process has lowest priority
-				if (newProcess.getPriority() < gantProcess.getPriority()) {
-
-					// 1) Set the end time for the last gant entry
-					gantEntry.end = timeline;
-
-					// 2) Set the cpu utilization for the last gant entry
-					gantProcess.addCpuTime(gantEntry.end - gantEntry.start);
-
-					// 3) If current process is not finished, add it to the
-					// remaining queue
-					if (!isFinished(gantProcess))
-						remainingQueue.add(gantEntry.process);
-
-					// 4) Add new process to the gant chart
-					gantChart.add(new GantEntry(newProcess, start, end));
-				} else
-					remainingQueue.add(newProcess);
+				// Increment the timeline of the gant chart
+				timeline += quantum;
 			}
-
-			// Increment the timeline of the gant chart
-			timeline++;
-		}
-
-		// Finish executing process in the last gant chart entry
-		GantEntry gantEntry = gantChart.getLast();
-
-		// Temporarily set the end in the last gant chart entry
-		gantEntry.end = timeline;
-
-		// Add cpu time to check if process in the last gant entry has finished.
-		gantEntry.process.addCpuTime(gantEntry.end - gantEntry.start);
-
-		// If process in the last gant entry has not finished
-		if (!isFinished(gantEntry.process)) {
-
-			// Get the process
-			PCB process = gantEntry.process;
-
-			// Get remaining cpu utilization time
-			int remainingTime = process.getBurstTime() - process.getCpuTime();
-
-			// Calculate the end time of this process
-			gantEntry.end = timeline + remainingTime;
-
-			// Add cpu utilization
-			process.addCpuTime(remainingTime);
-
-			// Update timeline
-			timeline = gantEntry.end;
-		}
-
-		// Finish executing remaining processes in the remaining queue
-		while (!remainingQueue.isEmpty()) {
-
-			// Select next process with the lowest priority to execute
-			PCB nextProcess = remainingQueue.poll();
-
-			// Get remaining cpu time utilization
-			int remainingTime = nextProcess.getBurstTime() - nextProcess.getCpuTime();
-
-			// Set the start and end time for process
-			int start = timeline;
-			int end = start + remainingTime;
-
-			// Add cpu utilization
-			nextProcess.addCpuTime(remainingTime);
-
-			// Add process to the gant entry
-			gantChart.add(new GantEntry(nextProcess, start, end));
-
-			// update timeline
-			timeline = end;
 		}
 
 		return gantChart.stream().map(

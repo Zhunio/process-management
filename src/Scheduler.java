@@ -65,7 +65,7 @@ public class Scheduler {
 			// Execute the scheduler
 			scheduler.execute(jobPool, scheduleAlgorithm);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 		}
 	}
 
